@@ -21,7 +21,12 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 public class RabbitReceiver {
     @RabbitHandler
-    @RabbitListener(queues = "rabbitmq-demo")
+    //@RabbitListener(queues = "rabbitmq-demo")
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = "rabbitmq-demo", durable = "true"),
+            exchange = @Exchange(name = "rabbit-springboot-exchange", durable = "true", type = "topic"),
+            key = "rabbitmq-demo-routingkey"
+    ))
     public void receiveMessage(Message message, Channel channel) throws UnsupportedEncodingException {
         String encoding = message.getMessageProperties().getContentEncoding();
         log.info("接收到string消息:[{}]", new String(message.getBody(), "UTF-8"));
@@ -33,7 +38,12 @@ public class RabbitReceiver {
     }
 
     @RabbitHandler
-    @RabbitListener(queues = "rabbitmq-demo-bean")
+    //@RabbitListener(queues = "rabbitmq-demo-bean")
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = "rabbitmq-demo-bean", durable = "true"),
+            exchange = @Exchange(name = "rabbit-springboot-exchange", durable = "true", type = "topic"),
+            key = "rabbitmq-demo-routingkey-bean"
+    ))
     public void receiveMessage(User user, Message message, Channel channel) {
         log.info("接收到bean消息:[{}]", user);
         try {
